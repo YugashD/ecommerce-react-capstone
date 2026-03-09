@@ -44,7 +44,15 @@ export async function loginUser(username: string, password: string) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password }),
   });
-  return { ok: res.ok, data: await res.json() };
+  const status = res.status;
+  let data = null;
+  try {
+    data = await res.json();
+  } catch (err) {
+    // response had no JSON body
+    data = null;
+  }
+  return { ok: res.ok, status, data };
 }
 
 export async function signupUser(payload: object) {

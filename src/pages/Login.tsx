@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import { loginUser } from '../services/api';
+import { useToast } from '../context/ToastContext';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('user');
-  const [error, setError] = useState('');
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
@@ -17,14 +18,17 @@ const Login = () => {
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
-      const { ok, data } = await loginUser(username, password);
+      const { ok, status, data } = await loginUser(username, password);
 
       if (!ok) {
         setLoading(false);
-        setError('Invalid username or password. Please try again.');
+        if (status === 401) {
+          toast.addToast('Username or password is incorrect.', 'error');
+        } else {
+          toast.addToast('Invalid username or password. Please try again.', 'error');
+        }
         return;
       }
 
@@ -37,11 +41,11 @@ const Login = () => {
         const redirectTo = role === 'admin' && savedRedirect === '/cart' ? '/home' : savedRedirect;
         navigate(redirectTo, { replace: true });
       } else {
-        setError('Invalid username or password. Please try again.');
+        toast.addToast('Username or password is incorrect.', 'error');
       }
     } catch (err) {
       setLoading(false);
-      setError('An error occurred. Please try again.');
+      toast.addToast('An error occurred. Please try again.', 'error');
     }
   };
 
@@ -59,9 +63,7 @@ const Login = () => {
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 text-xs px-3 py-2.5 rounded-lg mb-4">{error}</div>
-          )}
+          {/* Errors are shown via toast notifications */}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

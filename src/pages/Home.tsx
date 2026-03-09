@@ -1,6 +1,11 @@
 import { Link } from 'react-router';
+import { useAuth } from '../context/AuthContext';
 
 export const Home = () => {
+  const { role } = useAuth();
+
+  const isAdmin = role === 'admin';
+
   return (
     <div className="space-y-14">
       {/* Hero */}
@@ -13,12 +18,12 @@ export const Home = () => {
         <div className="flex gap-3 justify-center">
           <Link to="/products">
             <button className="px-6 py-2.5 bg-slate-900 text-white rounded-xl hover:bg-slate-700 transition-colors cursor-pointer text-sm font-medium">
-              Browse products
+              {isAdmin ? 'Manage products' : 'Browse products'}
             </button>
           </Link>
-          <Link to="/cart">
+          <Link to={isAdmin ? '/products/new' : '/cart'}>
             <button className="px-6 py-2.5 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer text-sm font-medium">
-              View cart
+              {isAdmin ? 'Add product' : 'View cart'}
             </button>
           </Link>
         </div>
@@ -26,7 +31,7 @@ export const Home = () => {
 
       {/* Categories */}
       <section>
-        <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-4">Shop by category</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-4">{isAdmin ? 'Manage by category' : 'Shop by category'}</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { label: 'Electronics', icon: '💻', slug: 'electronics' },

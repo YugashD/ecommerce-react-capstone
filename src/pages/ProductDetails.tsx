@@ -13,7 +13,6 @@ export const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [deleteError, setDeleteError] = useState('');
 
   const { role } = useAuth();
@@ -39,8 +38,8 @@ export const ProductDetails = () => {
     try {
       await deleteProduct(id!);
       setShowDeleteModal(false);
-      setShowSuccessModal(true);
-      setTimeout(() => navigate('/products'), 1800);
+      addToast('Product deleted successfully!', 'success');
+      navigate('/products');
     } catch {
       setDeleteError('Failed to delete product. Please try again.');
     }
@@ -62,17 +61,6 @@ export const ProductDetails = () => {
               <button onClick={() => setShowDeleteModal(false)} className="flex-1 px-4 py-2 border border-slate-200 text-slate-700 rounded-xl text-sm hover:bg-slate-50 cursor-pointer">Cancel</button>
               <button onClick={handleDeleteConfirm} className="flex-1 px-4 py-2 bg-red-500 text-white rounded-xl text-sm hover:bg-red-600 cursor-pointer">Delete</button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Success modal */}
-      {showSuccessModal && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 text-center shadow-xl">
-            <p className="text-2xl mb-2">✓</p>
-            <p className="text-slate-700 font-medium">Product deleted</p>
-            <p className="text-slate-400 text-sm">Redirecting...</p>
           </div>
         </div>
       )}
